@@ -5,9 +5,11 @@
 #include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
 
+#include "FluidQuantity.h"
+#include "FluidSolver.h"
 GLFWwindow* window;
-float window_width = 1200;
-float window_height = 900;
+float window_width = 400;
+float window_height = 400;
 
 int initProgram();
 
@@ -16,9 +18,13 @@ int main()
 	if (initProgram() != 0)
 		return -1;
 
+	FluidSolver fluid(window_width, window_height);
+
 	do
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
 
 
 
@@ -63,7 +69,7 @@ int initProgram()
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetCursorPos(window, window_width / 2, window_height / 2);
 
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0.5, 0.5, 0.5, 1);
 
 	//Z-Buffer
 	glEnable(GL_DEPTH_TEST);
