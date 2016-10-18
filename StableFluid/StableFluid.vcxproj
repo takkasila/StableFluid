@@ -80,11 +80,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="LoadShader.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FluidQuantity.h" />
     <ClInclude Include="FluidSolver.h" />
+    <ClInclude Include="LoadShader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fluid_frag.glsl" />
+    <None Include="pass_vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

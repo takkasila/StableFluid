@@ -13,9 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{e2401d62-8ee1-4176-be2b-046421c61269}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,5 +32,16 @@
     <ClInclude Include="FluidSolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LoadShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fluid_frag.glsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="pass_vert.glsl">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

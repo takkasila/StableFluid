@@ -1,15 +1,26 @@
 #include <stdio.h>
+#include <vector>
 #include <sstream>
 
 #include "GLEW\glew.h"
 #include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
 
+#include "LoadShader.h"
 #include "FluidQuantity.h"
 #include "FluidSolver.h"
+
+using namespace glm;
+using namespace std;
+
+//typedef unsigned long DWORD;
+//extern "C" {	// Force using Nvidia GPU. Turn 0 if don't want to.
+//	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+//}
+
 GLFWwindow* window;
-float window_width = 400;
-float window_height = 400;
+float screeen_width = 500;
+float screeen_height = 500;
 
 int initProgram();
 
@@ -18,16 +29,50 @@ int main()
 	if (initProgram() != 0)
 		return -1;
 
-	FluidSolver fluid(window_width, window_height);
+	ShaderGenerator shaderProgram;
+	shaderProgram.AddShader("pass_vert.glsl", GL_VERTEX_SHADER);
+	shaderProgram.AddShader("fluid_frag.glsl", GL_FRAGMENT_SHADER);
+	GLuint shaderProgramID = shaderProgram.LinkProgram();
 
+	FluidSolver fluid(screeen_width, screeen_height);
+
+	GLuint VertexArrayID;
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
+
+	static const GLfloat g_vertex_buffer_data [] = {
+		-1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+	};
+
+	GLuint vertexBuffer;
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+	GLuint uniformScreenSizeLocation = glGetUniformLocation(shaderProgramID, "screenSize");
 	do
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glUseProgram(shaderProgramID);
 
+		glUniform2f(uniformScreenSizeLocation, screeen_width, screeen_height);
 
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glVertexAttribPointer(
+			0
+			, 3
+			, GL_FLOAT
+			, GL_FALSE
+			, 0
+			, (void*)0
+		);
 
-
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray(0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -48,8 +93,7 @@ int initProgram()
 	glfwWindowHint(GLFW_SAMPLES, 16);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-
-	window = glfwCreateWindow(window_width, window_height, "Stable FLuid @JosStam", NULL, NULL);
+	window = glfwCreateWindow(screeen_width, screeen_height, "Stable FLuid @JosStam", NULL, NULL);
 	if (window == NULL)
 	{
 		fprintf(stderr, "Failed to open glfw window");
@@ -67,9 +111,12 @@ int initProgram()
 	}
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-	glfwSetCursorPos(window, window_width / 2, window_height / 2);
+	glfwSetCursorPos(window, screeen_width / 2, screeen_height / 2);
 
-	glClearColor(0.5, 0.5, 0.5, 1);
+	glClearColor(0.1, 0.1, 0.1, 1);
+
+	//Uniform Double
+	glEnable(GL_ARB_gpu_shader_fp64);
 
 	//Z-Buffer
 	glEnable(GL_DEPTH_TEST);
