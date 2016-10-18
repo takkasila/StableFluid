@@ -7,11 +7,10 @@
 
 class FluidSolver
 {
-	FluidQuantity *density;
+public:
 	int width, height;
 	double cellSize;
-
-public:
+	FluidQuantity *density;
 	FluidSolver::FluidSolver(int width, int height)
 		:width(width), height(height), cellSize(1.0/std::min(width, height))
 	{

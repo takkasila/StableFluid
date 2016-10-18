@@ -2,8 +2,8 @@
 #define FLUID_QUANTITY
 class FluidQuantity
 {
-	double *currData, *nextData;
 public:
+	double *currData, *nextData;
 	int width, height;
 	double cellSize;
 
@@ -12,7 +12,12 @@ public:
 	{
 		currData = new double[width*height];
 		nextData = new double[width*height];
-		memset(currData, 0, sizeof(double) * width*height);
+
+		//std::fill(currData, currData + (width*height), 1.0);
+		for (int i = 1; i <= width*height; i++)
+		{
+			currData[i-1] = double(i) / double(width*height);
+		}
 	}
 
 	~FluidQuantity()
