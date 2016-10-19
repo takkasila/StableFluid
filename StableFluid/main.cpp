@@ -13,10 +13,10 @@
 using namespace glm;
 using namespace std;
 
-//typedef unsigned long DWORD;
-//extern "C" {	// Force to use Nvidia GPU. Turn 0 if don't want to.
-//	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
-//}
+typedef unsigned long DWORD;
+extern "C" {	// Force to use Nvidia GPU. Turn 0 if don't want to.
+	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}
 
 GLFWwindow* window;
 int screeen_width = 500;
@@ -59,11 +59,6 @@ int main()
 	GLuint u_densityFloat_tbo_tex = glGetUniformLocation(shaderProgramID, "u_densityFloat_tbo_tex");
 
 	float *tbo_density = new float[fluid.width*fluid.height];
-	/*float tbo_data [] = {
-		1.0, 0.0, 0.0,
-		0.0, 1.0, 0.0,
-		1.0, 0.0, 1.0
-	};*/
 
 	GLuint tbo;
 	glGenBuffers(1, &tbo);
