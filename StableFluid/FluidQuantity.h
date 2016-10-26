@@ -13,11 +13,24 @@ public:
 		currData = new double[width*height];
 		nextData = new double[width*height];
 
-		//std::fill(currData, currData + (width*height), 1.0);
-		for (int i = 1; i <= width*height; i++)
-		{
-			currData[i-1] = double(i) / double(width*height);
-		}
+		std::fill(currData, currData + (width*height), 0);
+	}
+
+	inline const double value(int x, int y)
+	{
+		return currData [x+y*width];
+	}
+
+	void addSource(double x_begin, double x_end, double y_begin, double y_end, double value)
+	{
+		int ix_begin = x_begin*width;
+		int ix_end = x_end*width;
+		int iy_begin = y_begin*height;
+		int iy_end = y_end*height;
+		
+		for (int i = ix_begin; i < ix_end; i++)
+			for (int j = iy_begin; j < iy_end; j++)
+				currData[i + j*width] = value;
 	}
 
 	~FluidQuantity()
@@ -26,10 +39,6 @@ public:
 		delete [] nextData;
 	}
 
-	inline const double value(int x, int y)
-	{
-		return currData [x+y*width];
-	}
 
 private:
 

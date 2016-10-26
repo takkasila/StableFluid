@@ -7,7 +7,7 @@ out vec4 color;
 
 void main()
 {
-    int pos = int((gl_FragCoord.x-1) + (gl_FragCoord.y-1)*screenSize.x);
-    color = vec4(texelFetch(u_densityFloat_tbo_tex, pos).r);
-	color.a = 1.0;
+    int pos = int(gl_FragCoord.x) + int(gl_FragCoord.y)*int(screenSize.x);
+    float wtf = texelFetch(u_densityFloat_tbo_tex, pos).r;
+	color = vec4(vec3(wtf), 1);
 }

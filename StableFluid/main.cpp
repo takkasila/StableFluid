@@ -58,27 +58,25 @@ int main()
 	//TBO
 	GLuint u_densityFloat_tbo_tex = glGetUniformLocation(shaderProgramID, "u_densityFloat_tbo_tex");
 
-	float *tbo_density = new float[fluid.width*fluid.height];
-
 	GLuint tbo;
 	glGenBuffers(1, &tbo);
-	glBindBuffer(GL_TEXTURE_BUFFER, tbo);
-	glBufferData(GL_TEXTURE_BUFFER, sizeof(tbo_density)*screeen_width*screeen_height, tbo_density, GL_STATIC_DRAW);
 
 	GLuint tbo_tex;
 	glGenTextures(1, &tbo_tex);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
-
 	//Uniform_Screen
 	GLuint uniformScreenSizeLocation = glGetUniformLocation(shaderProgramID, "screenSize");
 
+	//Timer
+	double lastTime = 0, currTime;
+	glfwSetTime(0);
 	do
 	{
 		//Update fluid
-		//Change to next data later
-		copy(fluid.density->currData, fluid.density->currData+(fluid.density->height*fluid.density->width), tbo_density);
-
+		currTime = glfwGetTime();
+		fluid.Update(currTime-lastTime);
+		lastTime = currTime;
 
 		//Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -88,18 +86,11 @@ int main()
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glVertexAttribPointer(
-			0
-			, 3
-			, GL_FLOAT
-			, GL_FALSE
-			, 0
-			, (void*)0
-		);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 		//TBO
 		glBindBuffer(GL_TEXTURE_BUFFER, tbo);
-		glBufferData(GL_TEXTURE_BUFFER, sizeof(tbo_density)*screeen_width*screeen_height, tbo_density, GL_STATIC_DRAW);
+		glBufferData(GL_TEXTURE_BUFFER, sizeof(float)*screeen_width*screeen_height, fluid.dense_f, GL_STATIC_DRAW);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_BUFFER, tbo_tex);
@@ -148,7 +139,7 @@ int initProgram()
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetCursorPos(window, screeen_width / 2, screeen_height / 2);
 
-	glClearColor(0.2, 0.2, 0.2, 1);
+	glClearColor(0, 0.0, 0.0, 1);
 
 	//Uniform Double
 	glEnable(GL_ARB_gpu_shader_fp64);
