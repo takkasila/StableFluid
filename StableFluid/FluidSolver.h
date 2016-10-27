@@ -100,9 +100,24 @@ public:
 		set_boundary(data);
 	}
 
-	void set_boundary(double *x)
+	void set_boundary(double *data)
 	{
-
+		//Edge
+		for (int i = 1; i <= width; i++)
+		{
+			data[AT(i, 0)] = data[AT(i, 1)];
+			data[AT(i, height + 1)] = data[AT(i, height)];
+		}
+		for (int j = 1; j <= height; j++)
+		{
+			data[AT(0, j)] = data[AT(1, j)];
+			data[AT(width + 1, j)] = data[AT(width, j)];
+		}
+		//Corner
+		data[AT(0, 0)] = (data[AT(0, 1)] + data[AT(1, 0)]) / 2;
+		data[AT(width + 1, 0)] = (data[AT(width, 0)] + data[AT(width + 1, 1)]) / 2;
+		data[AT(width + 1, height + 1)] = (data[AT(width, height + 1)] + data[AT(width + 1, height)]) / 2;
+		data[AT(0, height+1)] = (data[AT(1, height+1)] + data[AT(0, height)]) / 2;
 	}
 
 	void addFlow(double x_begin, double x_end, double y_begin, double y_end, double dense, double speed_x, double speed_y)
