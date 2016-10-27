@@ -1,5 +1,6 @@
 #ifndef FLUID_QUANTITY
 #define FLUID_QUANTITY
+
 class FluidQuantity
 {
 public:
@@ -16,6 +17,7 @@ public:
 		nextData = new double[totalBlock];
 
 		std::fill(currData, currData + (totalBlock), 0);
+		std::fill(nextData, nextData + (totalBlock), 0);
 	}
 
 	inline const double value(int x, int y)
