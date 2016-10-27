@@ -19,8 +19,10 @@ extern "C" {	// Force to use Nvidia GPU. Turn 0 if don't want to.
 }
 
 GLFWwindow* window;
-int screeen_width = 300;
-int screeen_height = 300;
+static int screeen_width = 500;
+static int screeen_height = 500;
+static int cell_x = 100;
+static int cell_y = 100;
 
 int initProgram();
 
@@ -28,12 +30,13 @@ int main()
 {
 	if (initProgram() != 0)
 		return -1;
+
 	ShaderGenerator shaderProgram;
 	shaderProgram.AddShader("pass_vert.glsl", GL_VERTEX_SHADER);
 	shaderProgram.AddShader("fluid_frag.glsl", GL_FRAGMENT_SHADER);
 	GLuint shaderProgramID = shaderProgram.LinkProgram();
 
-	FluidSolver fluid(screeen_width, screeen_height, 0.01);
+	FluidSolver fluid(cell_x, cell_y, 0.01);
 
 	//VAO
 	GLuint VertexArrayID;
@@ -65,8 +68,11 @@ int main()
 	glGenTextures(1, &tbo_tex);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
-	//Uniform_Screen
-	GLuint uniformScreenSizeLocation = glGetUniformLocation(shaderProgramID, "screenSize");
+	//Uniform Screen
+	GLuint u_screenSize_location = glGetUniformLocation(shaderProgramID, "screenSize");
+
+	//Uniform Cell Number
+	GLuint u_cellCount_location = glGetUniformLocation(shaderProgramID, "cellCount");
 
 	//Timer
 	double lastTime = 0, currTime;
@@ -77,8 +83,8 @@ int main()
 		currTime = glfwGetTime();
 		//fluid.addFlow(0.25, 0.75, 0.25, 0.5, 1, 1, 1);
 		fluid.dense->addSource(0.25, 0.75, 0.25, 0.5, 1);
-		fluid.speed_x->addSource(0, 1, 0, 1, 0.1);
-		fluid.speed_y->addSource(0, 1, 0, 1, 0.1);
+		fluid.speed_x->addSource(0, 1, 0, 1, 0.2);
+		fluid.speed_y->addSource(0, 1, 0, 1, 0.2);
 		fluid.Update(currTime-lastTime);
 		lastTime = currTime;
 
@@ -86,7 +92,8 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(shaderProgramID);
-		glUniform2f(uniformScreenSizeLocation, screeen_width, screeen_height);
+		glUniform2i(u_screenSize_location, screeen_width, screeen_height);
+		glUniform2i(u_cellCount_location, cell_x, cell_y);
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -94,7 +101,7 @@ int main()
 
 		//TBO
 		glBindBuffer(GL_TEXTURE_BUFFER, tbo);
-		glBufferData(GL_TEXTURE_BUFFER, sizeof(float)*screeen_width*screeen_height, fluid.dense_f, GL_STATIC_DRAW);
+		glBufferData(GL_TEXTURE_BUFFER, sizeof(float)*cell_x*cell_y, fluid.dense_f, GL_STATIC_DRAW);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_BUFFER, tbo_tex);
