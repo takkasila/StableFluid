@@ -4,7 +4,7 @@
 class FluidQuantity
 {
 public:
-	double *currData, *nextData;
+	double *data_prev, *data;
 	int width, height;
 	double cellSize;
 	int totalBlock;
@@ -13,16 +13,16 @@ public:
 		: width(width), height(height), cellSize(cellSize)
 	{
 		totalBlock = (width + 2) * (height + 2);
-		currData = new double[totalBlock];
-		nextData = new double[totalBlock];
+		data_prev = new double[totalBlock];
+		data = new double[totalBlock];
 
-		std::fill(currData, currData + (totalBlock), 0);
-		std::fill(nextData, nextData + (totalBlock), 0);
+		std::fill(data_prev, data_prev + (totalBlock), 0);
+		std::fill(data, data + (totalBlock), 0);
 	}
 
 	inline const double value(int x, int y)
 	{
-		return currData [x+y*width];
+		return data_prev [x+y*width];
 	}
 
 	void addSource(double x_begin, double x_end, double y_begin, double y_end, double value)
@@ -34,13 +34,13 @@ public:
 		
 		for (int i = ix_begin+1; i <= ix_end; i++)
 			for (int j = iy_begin+1; j <= iy_end; j++)
-				currData[i + j*(width+2)] = value;
+				data_prev[i + j*(width+2)] = value;
 	}
 
 	~FluidQuantity()
 	{
-		delete [] currData;
-		delete [] nextData;
+		delete [] data_prev;
+		delete [] data;
 	}
 
 

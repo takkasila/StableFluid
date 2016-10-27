@@ -75,6 +75,10 @@ int main()
 	{
 		//Update fluid
 		currTime = glfwGetTime();
+		//fluid.addFlow(0.25, 0.75, 0.25, 0.5, 1, 1, 1);
+		fluid.dense->addSource(0.25, 0.75, 0.25, 0.5, 1);
+		fluid.speed_x->addSource(0, 1, 0, 1, 0.1);
+		fluid.speed_y->addSource(0, 1, 0, 1, 0.1);
 		fluid.Update(currTime-lastTime);
 		lastTime = currTime;
 
