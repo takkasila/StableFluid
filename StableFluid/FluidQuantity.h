@@ -6,14 +6,16 @@ public:
 	double *currData, *nextData;
 	int width, height;
 	double cellSize;
+	int totalBlock;
 
 	FluidQuantity::FluidQuantity(int width, int height, double cellSize)
 		: width(width), height(height), cellSize(cellSize)
 	{
-		currData = new double[width*height];
-		nextData = new double[width*height];
+		totalBlock = (width + 2) * (height + 2);
+		currData = new double[totalBlock];
+		nextData = new double[totalBlock];
 
-		std::fill(currData, currData + (width*height), 0);
+		std::fill(currData, currData + (totalBlock), 0);
 	}
 
 	inline const double value(int x, int y)
@@ -28,9 +30,9 @@ public:
 		int iy_begin = y_begin*height;
 		int iy_end = y_end*height;
 		
-		for (int i = ix_begin; i < ix_end; i++)
-			for (int j = iy_begin; j < iy_end; j++)
-				currData[i + j*width] = value;
+		for (int i = ix_begin+1; i <= ix_end; i++)
+			for (int j = iy_begin+1; j <= iy_end; j++)
+				currData[i + j*(width+2)] = value;
 	}
 
 	~FluidQuantity()

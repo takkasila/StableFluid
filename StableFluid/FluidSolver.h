@@ -15,7 +15,6 @@ public:
 	FluidQuantity *speed;
 	//For rendering
 	float *dense_f;
-	float *speed_f;
 
 	FluidSolver::FluidSolver(int width, int height)
 		:width(width), height(height), cellSize(1.0/std::min(width, height))
@@ -23,7 +22,6 @@ public:
 		dense = new FluidQuantity(width, height, cellSize);
 		speed = new FluidQuantity(width, height, cellSize);
 		dense_f = new float[width*height];
-		speed_f = new float[width*height];
 	}
 
 	void Update(double timeStep)
@@ -40,18 +38,17 @@ public:
 
 	void densityStep()
 	{
-		dense->addSource(0.25, 0.9, 0.25, 0.5, 1);
+		dense->addSource(0.25, 0.75, 0.25, 0.75, 1);
 	}
 
-
-
-	void doubleToFloat()
+	void diffuse()
 	{
-		for (int i = 0; i < width*height; i++)
-		{
-			dense_f[i] = float(dense->currData[i]);
-			speed_f[i] = float(speed->currData[i]);
-		}
+
+	}
+
+	void advect()
+	{
+
 	}
 
 	void addDense(float x1, float y1, float x2, float y2, float dense)
@@ -59,9 +56,12 @@ public:
 
 	}
 
-	inline const double getDense(int x, int y)
+	void doubleToFloat()
 	{
-		return dense->value(x, y);
+		int count = 0;
+		for (int i = 1; i <= width; i++)
+			for (int j = 1; j <= height; j++)
+				dense_f[(i - 1) + (j - 1)*width] = float(dense->currData[i + j*(width + 2)]);
 	}
 
 	~FluidSolver()
