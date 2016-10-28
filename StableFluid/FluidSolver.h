@@ -36,41 +36,30 @@ public:
 
 	void velocityStep(double timeStep)
 	{
-
+		diffuse(speed_x->data, speed_x->data_prev, timeStep, 1, 0);
+		diffuse(speed_y->data, speed_y->data_prev, timeStep, 0, 1);
+		project(speed_x->data, speed_y->data);
+		/*advect();
+		advect();
+		project();*/
+		
 	}
 
 	void densityStep(double timeStep)
 	{
-		diffuse(dense->data, dense->data_prev, timeStep);
-		advect(dense->data_prev, dense->data, speed_x->data_prev, speed_y->data_prev, timeStep);
+		diffuse(dense->data, dense->data_prev, timeStep, false, false);
+		advect(dense->data_prev, dense->data, speed_x->data_prev, speed_y->data_prev, timeStep, false, false);
 		SWAP(dense->data, dense->data_prev);
 	}
 
-	void diffuse(double *data, double *data_prev, double timeStep)
+	void diffuse(double *data, double *data_prev, double timeStep, bool u_cond, bool v_cond)
 	{
-		double coeff = timeStep*diffusion_rate*width*height;
-		for (int k = 0; k < 20; k++)
-		{
-			for (int j = 1; j <= height; j++)
-				for (int i = 1; i <= width; i++)
-				{
-					data[AT(i, j)] =
-						(
-							data_prev[AT(i, j)]
-							+
-							coeff *
-							(
-								data[AT(i - 1, j)] + data[AT(i + 1, j)] + data[AT(i, j - 1)] + data[AT(i, j + 1)]
-							)
-						)
-						/
-						(1+4*coeff);
-				}
-			set_boundary(data);
-		}
+		double coeff1 = timeStep*diffusion_rate*width*height;
+		double coeff2 = 1 + 4 * coeff1;
+		linear_solver(data, data_prev, coeff1, coeff2, u_cond, v_cond);
 	}
 
-	void advect(double *data, double *data_prev, double *u, double *v, double timeStep)
+	void advect(double *data, double *data_prev, double *u, double *v, double timeStep, bool u_cond, bool v_cond)
 	{
 		double x, y;
 		int i0, i1, j0, j1;
@@ -97,21 +86,51 @@ public:
 						, lerp(data_prev[AT(i0, j1)], data_prev[AT(i1, j1)], x - i0) // top
 						, y-j0);
 			}
-		set_boundary(data);
+		set_boundary(data, u_cond, v_cond);
 	}
 
-	void set_boundary(double *data)
+	void project(double *u, double *v)
+	{
+
+	}
+
+	void linear_solver(double* data, double *data_prev, double coeff1, double coeff2, bool u_cond, bool v_cond)
+	{
+		for (int k = 0; k < 20; k++)
+		{
+			for (int j = 1; j <= height; j++)
+				for (int i = 1; i <= width; i++)
+				{
+					data[AT(i, j)] =
+						(
+						data_prev[AT(i, j)]
+						+
+						coeff1 *
+						(
+						data[AT(i - 1, j)] + data[AT(i + 1, j)] + data[AT(i, j - 1)] + data[AT(i, j + 1)]
+						)
+						)
+						/
+						(coeff2);
+				}
+			set_boundary(data, u_cond, v_cond);
+		}
+	}
+
+	void set_boundary(double *data, bool u_cond, bool v_cond)
 	{
 		//Edge
+		int coef_u = u_cond == true ? -1 : 1;
+		int coef_v = v_cond == true ? -1 : 1;
 		for (int i = 1; i <= width; i++)
 		{
-			data[AT(i, 0)] = data[AT(i, 1)];
-			data[AT(i, height + 1)] = data[AT(i, height)];
+			data[AT(i, 0)] = data[AT(i, 1)] * coef_u;
+			data[AT(i, height + 1)] = data[AT(i, height)] * coef_u;
 		}
 		for (int j = 1; j <= height; j++)
 		{
-			data[AT(0, j)] = data[AT(1, j)];
-			data[AT(width + 1, j)] = data[AT(width, j)];
+			data[AT(0, j)] = data[AT(1, j)] * coef_v;
+			data[AT(width + 1, j)] = data[AT(width, j)] * coef_v;
 		}
 		//Corner
 		data[AT(0, 0)] = (data[AT(0, 1)] + data[AT(1, 0)]) / 2;
