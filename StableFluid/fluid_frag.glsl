@@ -19,7 +19,7 @@ float lerp(float a, float b, float amount)
 void main()
 {
     vec2 cellSize = screenSize / cellCount;
-    vec2 cellIndex = floor(gl_FragCoord.xy/cellSize);
+    vec2 cellIndex = round(gl_FragCoord.xy/cellSize);
     //Four closest neighbor
     vec2 p1 = cellSize * (cellIndex + (0.5, 0.5));
     vec2 p2 = cellSize * (cellIndex + (1.5, 0.5));
