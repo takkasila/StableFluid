@@ -24,7 +24,7 @@ public:
 		dense = new FluidQuantity(width, height, cellSize);
 		speed_x = new FluidQuantity(width, height, cellSize);
 		speed_y = new FluidQuantity(width, height, cellSize);
-		dense_f = new float[width*height];
+		dense_f = new float[(width+2)*(height+2)];
 	}
 
 	void Update(double timeStep)
@@ -129,10 +129,8 @@ public:
 
 	void doubleToFloat()
 	{
-		int count = 0;
-		for (int i = 1; i <= width; i++)
-			for (int j = 1; j <= height; j++)
-				dense_f[(i - 1) + (j - 1)*width] = float(dense->data[AT(i,j)]);
+		for (int i = 0; i < (width + 2)*(height + 2); i++)
+			dense_f[i] = dense->data[i];
 	}
 	
 	inline int AT(int i, int j)
@@ -157,7 +155,7 @@ public:
 
 	inline double lerp(double a, double b, double amount)
 	{
-		return a+(b-a)*amount;
+		return a + (b - a)*glm::clamp<double>(amount, 0, 1);
 	}
 
 private:

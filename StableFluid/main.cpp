@@ -19,8 +19,8 @@ extern "C" {	// Force to use Nvidia GPU. Turn 0 if don't want to.
 }
 
 GLFWwindow* window;
-static int screeen_width = 500;
-static int screeen_height = 500;
+static int screeen_width = 1000;
+static int screeen_height = 1000;
 static int cell_x = 100;
 static int cell_y = 100;
 
@@ -36,7 +36,7 @@ int main()
 	shaderProgram.AddShader("fluid_frag.glsl", GL_FRAGMENT_SHADER);
 	GLuint shaderProgramID = shaderProgram.LinkProgram();
 
-	FluidSolver fluid(cell_x, cell_y, 0.01);
+	FluidSolver fluid(cell_x, cell_y, 0.0005);
 
 	//VAO
 	GLuint VertexArrayID;
@@ -83,8 +83,8 @@ int main()
 		currTime = glfwGetTime();
 		//fluid.addFlow(0.25, 0.75, 0.25, 0.5, 1, 1, 1);
 		fluid.dense->addSource(0.25, 0.75, 0.25, 0.5, 1);
-		fluid.speed_x->addSource(0, 1, 0, 1, 0.2);
-		fluid.speed_y->addSource(0, 1, 0, 1, 0.2);
+		fluid.speed_x->addSource(0, 1, 0, 1, 0.01);
+		fluid.speed_y->addSource(0, 1, 0, 1, 0.01);
 		fluid.Update(currTime-lastTime);
 		lastTime = currTime;
 
@@ -101,7 +101,7 @@ int main()
 
 		//TBO
 		glBindBuffer(GL_TEXTURE_BUFFER, tbo);
-		glBufferData(GL_TEXTURE_BUFFER, sizeof(float)*cell_x*cell_y, fluid.dense_f, GL_STATIC_DRAW);
+		glBufferData(GL_TEXTURE_BUFFER, sizeof(float)*(cell_x+2)*(cell_y+2), fluid.dense_f, GL_STATIC_DRAW);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_BUFFER, tbo_tex);
