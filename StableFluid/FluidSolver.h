@@ -39,16 +39,17 @@ public:
 		diffuse(speed_x->data, speed_x->data_prev, timeStep, 1, 0);
 		diffuse(speed_y->data, speed_y->data_prev, timeStep, 0, 1);
 		project(speed_x->data, speed_y->data);
-		/*advect();
-		advect();
-		project();*/
-		
+		advect(speed_x->data_prev, speed_x->data, speed_x->data, speed_y->data, timeStep, 1, 0);
+		advect(speed_y->data_prev, speed_y->data, speed_x->data, speed_y->data, timeStep, 0, 1);
+		project(speed_x->data_prev, speed_y->data_prev);
+		SWAP(speed_x->data, speed_x->data_prev);
+		SWAP(speed_y->data, speed_y->data_prev);
 	}
 
 	void densityStep(double timeStep)
 	{
 		diffuse(dense->data, dense->data_prev, timeStep, false, false);
-		advect(dense->data_prev, dense->data, speed_x->data_prev, speed_y->data_prev, timeStep, false, false);
+		advect(dense->data_prev, dense->data, speed_x->data, speed_y->data, timeStep, false, false);
 		SWAP(dense->data, dense->data_prev);
 	}
 
@@ -91,7 +92,29 @@ public:
 
 	void project(double *u, double *v)
 	{
+		double *p = new double[(width + 2)*(height + 2)];
+		double *div = new double[(width + 2)*(height + 2)];
 
+		for (int j = 1; j <= height; j++)
+			for (int i = 1; i <= width; i++)
+			{
+				div[AT(i, j)] = -0.5*cellSize*(u[AT(i + 1, j)] - u[AT(i - 1, j)] 
+					+ v[AT(i, j + 1)] - v[AT(i, j - 1)]);
+				p[AT(i, j)] = 0;
+			}
+		set_boundary(div, false, false);
+		set_boundary(p, false, false);
+		
+		linear_solver(p, div, 1, 4, 0, 0);
+
+		for (int j = 1; j <= height; j++)
+			for (int i = 1; i <= width; i++)
+			{
+				u[AT(i, j)] -= 0.5*(p[AT(i + 1, j)] - p[AT(i - 1, j)])/cellSize;
+				v[AT(i, j)] -= 0.5*(p[AT(i, j + 1)] - p[AT(i, j - 1)])/cellSize;
+			}
+		set_boundary(u, true, false);
+		set_boundary(v, false, true);
 	}
 
 	void linear_solver(double* data, double *data_prev, double coeff1, double coeff2, bool u_cond, bool v_cond)

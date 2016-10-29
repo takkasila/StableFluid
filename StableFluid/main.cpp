@@ -74,19 +74,11 @@ int main()
 	//Uniform Cell Number
 	GLuint u_cellCount_location = glGetUniformLocation(shaderProgramID, "cellCount");
 
-	//Timer
-	double lastTime = 0, currTime;
-	glfwSetTime(0);
 	do
 	{
 		//Update fluid
-		currTime = glfwGetTime();
-		//fluid.addFlow(0.25, 0.75, 0.25, 0.5, 1, 1, 1);
-		fluid.dense->addSource(0.25, 0.75, 0.25, 0.5, 1);
-		fluid.speed_x->addSource(0, 1, 0, 1, 0.01);
-		fluid.speed_y->addSource(0, 1, 0, 1, 0.01);
-		fluid.Update(currTime-lastTime);
-		lastTime = currTime;
+		fluid.addFlow(0.4, 0.6, 0.05, 0.1, 1, 0, 1);
+		fluid.Update(0.05);
 
 		//Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
