@@ -13,7 +13,7 @@ int AT(int x, int y)
 
 float lerp(float a, float b, float amount)
 {
-    return a+(b-1)*clamp(amount, 0, 1);
+    return a+(b-a)*clamp(amount, 0, 1);
 }
 
 void main()

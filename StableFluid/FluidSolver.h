@@ -36,11 +36,11 @@ public:
 
 	void velocityStep(double timeStep)
 	{
-		diffuse(speed_x->data, speed_x->data_prev, timeStep, 1, 0);
-		diffuse(speed_y->data, speed_y->data_prev, timeStep, 0, 1);
+		diffuse(speed_x->data, speed_x->data_prev, timeStep, true, false);
+		diffuse(speed_y->data, speed_y->data_prev, timeStep, false, true);
 		project(speed_x->data, speed_y->data);
-		advect(speed_x->data_prev, speed_x->data, speed_x->data, speed_y->data, timeStep, 1, 0);
-		advect(speed_y->data_prev, speed_y->data, speed_x->data, speed_y->data, timeStep, 0, 1);
+		advect(speed_x->data_prev, speed_x->data, speed_x->data, speed_y->data, timeStep, true, false);
+		advect(speed_y->data_prev, speed_y->data, speed_x->data, speed_y->data, timeStep, false, true);
 		project(speed_x->data_prev, speed_y->data_prev);
 		SWAP(speed_x->data, speed_x->data_prev);
 		SWAP(speed_y->data, speed_y->data_prev);
