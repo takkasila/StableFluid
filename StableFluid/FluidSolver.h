@@ -15,6 +15,8 @@ public:
 	FluidQuantity *speed_x;
 	FluidQuantity *speed_y;
 	double diffusion_rate;
+	double *p;
+	double *div;
 	//For rendering
 	float *dense_f;
 
@@ -25,6 +27,8 @@ public:
 		speed_x = new FluidQuantity(width, height, cellSize);
 		speed_y = new FluidQuantity(width, height, cellSize);
 		dense_f = new float[(width+2)*(height+2)];
+		p = new double[(width + 2)*(height + 2)];
+		div = new double[(width + 2)*(height + 2)];
 	}
 
 	void Update(double timeStep)
@@ -92,9 +96,6 @@ public:
 
 	void project(double *u, double *v)
 	{
-		double *p = new double[(width + 2)*(height + 2)];
-		double *div = new double[(width + 2)*(height + 2)];
-
 		for (int j = 1; j <= height; j++)
 			for (int i = 1; i <= width; i++)
 			{
@@ -145,15 +146,19 @@ public:
 		//Edge
 		int coef_u = u_cond == true ? -1 : 1;
 		int coef_v = v_cond == true ? -1 : 1;
+		if (coef_u == -1)
+		{
+			int lmao = 2;
+		}
 		for (int i = 1; i <= width; i++)
 		{
-			data[AT(i, 0)] = data[AT(i, 1)] * coef_u;
-			data[AT(i, height + 1)] = data[AT(i, height)] * coef_u;
+			data[AT(i, 0)] = data[AT(i, 1)] * coef_v;
+			data[AT(i, height + 1)] = data[AT(i, height)] * coef_v;
 		}
 		for (int j = 1; j <= height; j++)
 		{
-			data[AT(0, j)] = data[AT(1, j)] * coef_v;
-			data[AT(width + 1, j)] = data[AT(width, j)] * coef_v;
+			data[AT(0, j)] = data[AT(1, j)] * coef_u;
+			data[AT(width + 1, j)] = data[AT(width, j)] * coef_u;
 		}
 		//Corner
 		data[AT(0, 0)] = (data[AT(0, 1)] + data[AT(1, 0)]) / 2;
@@ -192,6 +197,8 @@ public:
 		delete dense;
 		delete speed_x;
 		delete speed_y;
+		delete [] div;
+		delete [] p;
 		delete [] dense_f;
 	}
 

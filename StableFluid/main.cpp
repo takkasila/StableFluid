@@ -19,8 +19,8 @@ extern "C" {	// Force to use Nvidia GPU. Turn 0 if don't want to.
 }
 
 GLFWwindow* window;
-static int screeen_width = 1000;
-static int screeen_height = 1000;
+static int screeen_width = 500;
+static int screeen_height = 500;
 static int cell_x = 100;
 static int cell_y = 100;
 
@@ -36,7 +36,7 @@ int main()
 	shaderProgram.AddShader("fluid_frag.glsl", GL_FRAGMENT_SHADER);
 	GLuint shaderProgramID = shaderProgram.LinkProgram();
 
-	FluidSolver fluid(cell_x, cell_y, 0.0005);
+	FluidSolver fluid(cell_x, cell_y, 0.0000);
 
 	//VAO
 	GLuint VertexArrayID;
@@ -77,7 +77,8 @@ int main()
 	do
 	{
 		//Update fluid
-		fluid.addFlow(0.4, 0.6, 0.05, 0.1, 1, 0, 1);
+		fluid.addFlow(0.48, 0.52, 0, 0.03, 1, 0, 1);
+		fluid.addFlow(0.97, 1, 0.48, 0.52, 1, -1, 0);
 		fluid.Update(0.05);
 
 		//Render
